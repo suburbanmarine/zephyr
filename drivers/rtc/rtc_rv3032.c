@@ -141,8 +141,20 @@ static int rv3032_eeprom_wait_busy(const struct device *dev, int poll_ms)
 static int rv3032_exit_eerd(const struct device *dev)
 {
 	const struct rv3032_config *config = dev->config;
+	int ret;
 
-	return mfd_rv3032_update_reg8(config->mfd, RV3032_REG_CONTROL1, RV3032_CONTROL1_EERD, 0);
+	ret = mfd_rv3032_update_reg8(config->mfd, RV3032_REG_CONTROL1, RV3032_CONTROL1_EERD, 0);
+	if (ret) {
+		return ret;
+	}
+
+	if( FIELD_GET(config->backup, RV3032_EEPROM_PMU_BSM) != RV3032_BSM_DISABLED )
+	{
+		ret = mfd_rv3032_update_reg8(config->mfd, RV3032_REG_EEPROM_PMU, RV3032_EEPROM_PMU_BSM,
+				config->backup);
+	}
+
+	return ret;
 }
 
 static int rv3032_enter_eerd(const struct device *dev)
@@ -167,6 +179,16 @@ static int rv3032_enter_eerd(const struct device *dev)
 
 	if (ret) {
 		return ret;
+	}
+
+	if( FIELD_GET(config->backup, RV3032_EEPROM_PMU_BSM) != RV3032_BSM_DISABLED )
+	{
+		ret = mfd_rv3032_update_reg8(config->mfd, RV3032_REG_EEPROM_PMU, RV3032_EEPROM_PMU_BSM,
+				RV3032_BSM_DISABLED);
+	
+		if (ret) {
+			return ret;
+		}
 	}
 
 	ret = rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_WRITE_POLL_MS);
