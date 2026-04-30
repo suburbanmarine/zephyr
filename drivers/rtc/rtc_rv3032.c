@@ -230,6 +230,29 @@ exit_eerd:
 	return err;
 }
 
+static int rv3032_update_one(const struct device *dev, uint8_t addr)
+{
+	int err;
+
+	err = mfd_rv3032_write_reg8(config->mfd, RV3032_REG_EEPROM_ADDRESS, addr);
+	if (err) {
+		rv3032_exit_eerd(dev);
+		return err;
+	}
+
+	err = rv3032_eeprom_command(dev, RV3032_EEPROM_CMD_WRITE);
+	if (err) {
+		goto exit_eerd;
+	}
+
+	err = rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_WRITE_POLL_MS);
+
+exit_eerd:
+	rv3032_exit_eerd(dev);
+
+	return err;
+}
+
 static int rv3032_refresh(const struct device *dev)
 {
 	int err;
@@ -275,7 +298,7 @@ static int rv3032_update_cfg(const struct device *dev, uint8_t addr, uint8_t mas
 		return err;
 	}
 
-	return rv3032_update(dev);
+	return rv3032_update_one(dev, addr);
 }
 
 static int rv3032_configure_clkout(const struct device *dev, uint32_t freq)
