@@ -57,6 +57,7 @@ LOG_MODULE_REGISTER(rv3032, CONFIG_RTC_LOG_LEVEL);
 /* RV3032 EEPROM timing from datasheet */
 #define RV3032_EEBUSY_READ_POLL_MS  2   /* tREAD = ~1.1ms, poll every 2ms */
 #define RV3032_EEBUSY_WRITE_POLL_MS 5   /* tWRITE = ~4.8ms, poll every 5ms */
+#define RV3032_EEBUSY_UPDATE_POLL_MS 10 /* tUPDATE = ~46ms, poll every 10ms */
 #define RV3032_EEBUSY_TIMEOUT_MS    100 /* Max wait for any EEPROM operation */
 
 /* Recommended pre-refresh time before reading the time registers */
