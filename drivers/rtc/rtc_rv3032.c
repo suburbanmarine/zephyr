@@ -785,7 +785,7 @@ static DEVICE_API(rtc, rv3032_driver_api) = {
 };
 
 #define RV3032_BSM_FROM_DT_INST(inst)                                                              \
-	UTIL_CAT(RV3032_BSM_, DT_INST_STRING_UPPER_TOKEN(DT_PARENT(inst), backup_switch_mode))
+	UTIL_CAT(RV3032_BSM_, DT_STRING_UPPER_TOKEN(DT_INST_PARENT(inst), backup_switch_mode))
 
 #define RV3032_TCM_FROM_DT_INST(inst)                                                              \
 	COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, trickle_charger_mode),                             \
@@ -810,7 +810,7 @@ static DEVICE_API(rtc, rv3032_driver_api) = {
 		    (RV3032_TCR_600_OHM))
 
 #define RV3032_BACKUP_FROM_DT_INST(inst)                                                           \
-	((FIELD_PREP(RV3032_EEPROM_PMU_BSM, 0)) |                                                  \
+	((FIELD_PREP(RV3032_EEPROM_PMU_BSM, RV3032_BSM_FROM_DT_INST(inst))) |                      \
 	 (FIELD_PREP(RV3032_EEPROM_PMU_TCR, RV3032_TCR_FROM_DT_INST(inst))) |                      \
 	 (FIELD_PREP(RV3032_EEPROM_PMU_TCM, RV3032_TCM_FROM_DT_INST(inst))))
 
@@ -826,6 +826,7 @@ static DEVICE_API(rtc, rv3032_driver_api) = {
                                                                                                    \
 	static const struct rv3032_config rv3032_config_##inst = {                                 \
 		.mfd = DEVICE_DT_GET(DT_INST_PARENT(inst)),                                        \
+		.backup = RV3032_BACKUP_FROM_DT_INST(inst),                                        \
 		.clkout_freq = DT_INST_PROP_OR(inst, clkout_frequency, 0),                         \
 	};                                                                                         \
 	static struct rv3032_data rv3032_data_##inst;                                              \
