@@ -536,17 +536,18 @@ exit_eerd:
 int mfd_rv3032_eeprom_read_mult(const struct device *dev, uint8_t addr, void* data, size_t len)
 {
 	int err;
+	uint8_t buf[3] = {0, 0, RV3032_EEPROM_CMD_READ};
 
 	for(int i = 0; i < len; i++)
 	{
-		uint8_t buf[3] = {addr + i, 0, RV3032_EEPROM_CMD_READ};
+		buf[0] = addr + i;
 
 		err = mfd_rv3032_write_regs(dev, RV3032_REG_EEPROM_ADDRESS, buf, sizeof(buf));
 		if (err) {
 			goto exit_eerd;
 		}
 
-		err = mfd_rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_WRITE_POLL_MS, &eef);
+		err = mfd_rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_READ_POLL_MS, NULL);
 		if (err) {
 			goto exit_eerd;
 		}
