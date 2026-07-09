@@ -41,6 +41,8 @@ extern "C" {
 #define RV3032_EVI_CONTROL         0x15
 #define RV3032_REG_TEMP_LOW_THLD   0x16
 #define RV3032_REG_TEMP_HIGH_THLD  0x17
+#define RV3032_REG_RAM_USER00      0x40
+#define RV3032_REG_RAM_USER16      0x4F
 
 /* EEPROM register addresses */
 #define RV3032_REG_EEPROM_ADDRESS 0x3D
@@ -53,6 +55,8 @@ extern "C" {
 #define RV3032_REG_EEPROM_CLKOUT2 0xC3
 #define RV3032_REG_EEPROM_TREF0   0xC4
 #define RV3032_REG_EEPROM_TREF1   0xC5
+#define RV3032_REG_EEPROM_USER0   0xCB
+#define RV3032_REG_EEPROM_USER32  0xEA
 
 /* Registers masks and bits */
 #define RV3032_CONTROL1_TD   GENMASK(1, 0)
@@ -125,6 +129,10 @@ extern "C" {
 
 /* The RV3032 enumerates months 1 to 12 */
 #define RV3032_MONTH_OFFSET 1
+
+/* User area sizes */
+#define RV3032_RAM_USER_SIZE    16
+#define RV3032_EEPROM_USER_SIZE 32
 
 typedef void (*child_isr_t)(const struct device *dev);
 
@@ -243,6 +251,38 @@ int mfd_rv3032_eeprom_refresh(const struct device *dev);
  * @return 0 on success, else negative error code
  */
 int mfd_rv3032_eeprom_write_one(const struct device *dev, uint8_t addr, uint8_t val);
+
+/**
+ * @brief Write several bytes to EEPROM
+ *
+ * Write several bytes to EEPROM without changing the value in RAM
+ * mfd_rv3032_enter_eerd must be called first
+ * mfd_rv3032_exit_eerd will be called internally
+ *
+ * @param dev RV3032 MFD
+ * @param addr EEPROM reg address
+ * @param data values to write
+ * @param len length of data
+ *
+ * @return 0 on success, else negative error code
+ */
+int mfd_rv3032_eeprom_write_mult(const struct device *dev, uint8_t addr, const void* data, size_t len);
+
+/**
+ * @brief Read several bytes from EEPROM
+ *
+ * Read several bytes to EEPROM without changing the value in RAM
+ * mfd_rv3032_enter_eerd must be called first
+ * mfd_rv3032_exit_eerd will be called internally
+ *
+ * @param dev RV3032 MFD
+ * @param addr EEPROM reg address
+ * @param data values to write
+ * @param len length of data
+ *
+ * @return 0 on success, else negative error code
+ */
+int mfd_rv3032_eeprom_read_mult(const struct device *dev, uint8_t addr, void* data, size_t len);
 
 #ifdef __cplusplus
 }

@@ -1,0 +1,9 @@
+# Copyright (c) 2026 Schloss Automation LLC
+# SPDX-License-Identifier: Apache-2.0
+
+config EEPROM_RV3032
+	bool "RV3032 User EEPROM driver"
+	default y
+	depends on DT_HAS_RV3032_EEPROM_ENABLED
+	help
+		Enable RV3032 user EEPROM area

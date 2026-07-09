@@ -503,6 +503,66 @@ exit_eerd:
 	return err;
 }
 
+int mfd_rv3032_eeprom_write_mult(const struct device *dev, uint8_t addr, const void* data, size_t len)
+{
+	int err;
+	uint8_t eef;
+
+	for(int i = 0; i < len; i++)
+	{
+		uint8_t buf[3] = {addr + i, data[i], RV3032_EEPROM_CMD_WRITE};
+
+		err = mfd_rv3032_write_regs(dev, RV3032_REG_EEPROM_ADDRESS, buf, sizeof(buf));
+		if (err) {
+			goto exit_eerd;
+		}
+
+		err = mfd_rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_WRITE_POLL_MS, &eef);
+		if (err) {
+			goto exit_eerd;
+		}
+
+		if (eef) {
+			LOG_DBG("RTC EEF set");
+			err = -EIO;
+		}
+	}
+
+exit_eerd:
+	mfd_rv3032_exit_eerd(dev);
+
+	return err;
+}
+int mfd_rv3032_eeprom_read_mult(const struct device *dev, uint8_t addr, void* data, size_t len)
+{
+	int err;
+
+	for(int i = 0; i < len; i++)
+	{
+		uint8_t buf[3] = {addr + i, 0, RV3032_EEPROM_CMD_READ};
+
+		err = mfd_rv3032_write_regs(dev, RV3032_REG_EEPROM_ADDRESS, buf, sizeof(buf));
+		if (err) {
+			goto exit_eerd;
+		}
+
+		err = mfd_rv3032_eeprom_wait_busy(dev, RV3032_EEBUSY_WRITE_POLL_MS, &eef);
+		if (err) {
+			goto exit_eerd;
+		}
+
+		err = mfd_rv3032_read_regs(dev, RV3032_REG_EEPROM_DATA, data + i, 1);
+		if (err) {
+			goto exit_eerd;
+		}
+	}
+
+	exit_eerd:
+	mfd_rv3032_exit_eerd(dev);
+
+	return err;
+}
+
 int mfd_rv3032_update_cfg(const struct device *dev, uint8_t addr, uint8_t mask, uint8_t val)
 {
 	uint8_t val_old;
