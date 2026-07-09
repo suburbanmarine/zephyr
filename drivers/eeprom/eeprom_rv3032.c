@@ -34,9 +34,9 @@ static int eeprom_rv3032_read(const struct device *dev,
 		return err;
 	}
 
-	err = mfd_rv3032_eeprom_write_mult(config->mfd, RV3032_REG_EEPROM_USER0 + offset, data, len);
+	err = mfd_rv3032_eeprom_read_mult(config->mfd, RV3032_REG_EEPROM_USER0 + offset, data, len);
 	if (err) {
-		LOG_ERR("mfd_rv3032_eeprom_write_one failed: %d", err);
+		LOG_ERR("mfd_rv3032_eeprom_read_mult failed: %d", err);
 		return err;
 	}
 
@@ -59,9 +59,9 @@ static int eeprom_rv3032_write(const struct device *dev,
 		return err;
 	}
 
-	err = mfd_rv3032_eeprom_read_mult(config->mfd, RV3032_REG_EEPROM_USER0 + offset, data, len);
+	err = mfd_rv3032_eeprom_write_mult(config->mfd, RV3032_REG_EEPROM_USER0 + offset, data, len);
 	if (err) {
-		LOG_ERR("mfd_rv3032_eeprom_write_one failed: %d", err);
+		LOG_ERR("mfd_rv3032_eeprom_read_mult failed: %d", err);
 		return err;
 	}
 
