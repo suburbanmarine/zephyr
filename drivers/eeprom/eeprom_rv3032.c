@@ -70,7 +70,7 @@ static int eeprom_rv3032_write(const struct device *dev,
 
 static size_t eeprom_rv3032_size(const struct device *dev)
 {
-	return 32;
+	return RV3032_EEPROM_USER_SIZE;
 }
 
 static DEVICE_API(eeprom, eeprom_rv3032_api) = {
