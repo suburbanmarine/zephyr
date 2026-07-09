@@ -41,7 +41,7 @@ extern "C" {
 #define RV3032_EVI_CONTROL         0x15
 #define RV3032_REG_TEMP_LOW_THLD   0x16
 #define RV3032_REG_TEMP_HIGH_THLD  0x17
-#define RV3032_REG_RAM_USER00      0x40
+#define RV3032_REG_RAM_USER0       0x40
 #define RV3032_REG_RAM_USER16      0x4F
 
 /* EEPROM register addresses */

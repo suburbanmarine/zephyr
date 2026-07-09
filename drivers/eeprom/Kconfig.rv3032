@@ -4,6 +4,7 @@
 config EEPROM_RV3032
 	bool "RV3032 User EEPROM driver"
 	default y
-	depends on DT_HAS_RV3032_EEPROM_ENABLED
+	depends on DT_HAS_MICROCRYSTAL_RV3032_EEPROM_ENABLED
+	select MFD_RV3032
 	help
-		Enable RV3032 user EEPROM area
+		Enable RV3032 32 byte user EEPROM area 
